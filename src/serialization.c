@@ -36,6 +36,93 @@ void deserializeNand(FILE *f, NandGate *g) {
   fread(&g->nextValue, sizeof(bool), 1, f);
 }
 
+void serializeString(FILE *f, const char *str) {
+  if (str != NULL) {
+    int length = strlen(str) + 1;
+    fwrite(&length, sizeof(int), 1, f);
+    fwrite(str, sizeof(char), length, f);
+  } else {
+    int length = 0;
+    fwrite(&length, sizeof(int), 1, f);
+  }
+}
+
+void serializeStringArray(FILE *f, char **strArray, int count) {
+  for (int i = 0; i < count; ++i) {
+    serializeString(f, strArray[i]);
+  }
+}
+
+void serializeSubassembly(FILE *f, Subassembly *s) {
+  serializeString(f, s->name);
+
+  fwrite(&s->rect, sizeof(Rect), 1, f);
+
+  fwrite(&s->nGates, sizeof(int), 1, f);
+  if (s->nGates > 0) {
+    fwrite(s->gates, sizeof(int), s->nGates, f);
+  }
+
+  fwrite(&s->nInputs, sizeof(int), 1, f);
+  fwrite(&s->nOutputs, sizeof(int), 1, f);
+
+  serializeStringArray(f, s->inputNames, s->nInputs);
+
+  serializeStringArray(f, s->outputNames, s->nOutputs);
+
+  fwrite(&s->nSubassemblies, sizeof(int), 1, f);
+  if (s->nSubassemblies > 0) {
+    fwrite(s->subassemblies, sizeof(int), s->nSubassemblies, f);
+  }
+}
+
+char *deserializeString(FILE *f) {
+  int length;
+  fread(&length, sizeof(int), 1, f);
+  if (length > 0) {
+    char *str = (char *)malloc(length);
+    fread(str, sizeof(char), length, f);
+    return str;
+  } else {
+    return NULL;
+  }
+}
+
+void deserializeStringArray(FILE *f, char ***strArray, int count) {
+  *strArray = (char **)malloc(count * sizeof(char *));
+  for (int i = 0; i < count; ++i) {
+    (*strArray)[i] = deserializeString(f);
+  }
+}
+
+void deserializeSubassembly(FILE *f, Subassembly *s) {
+  s->name = deserializeString(f);
+
+  fread(&s->rect, sizeof(Rect), 1, f);
+
+  fread(&s->nGates, sizeof(int), 1, f);
+  if (s->nGates > 0) {
+    s->gates = (int *)malloc(s->nGates * sizeof(int));
+    fread(s->gates, sizeof(int), s->nGates, f);
+  } else {
+    s->gates = NULL;
+  }
+
+  fread(&s->nInputs, sizeof(int), 1, f);
+  fread(&s->nOutputs, sizeof(int), 1, f);
+
+  deserializeStringArray(f, &s->inputNames, s->nInputs);
+  deserializeStringArray(f, &s->outputNames, s->nOutputs);
+
+  fread(&s->nSubassemblies, sizeof(int), 1, f);
+  if (s->nSubassemblies > 0) {
+    s->subassemblies = (int *)malloc(s->nSubassemblies * sizeof(int));
+    fread(s->subassemblies, sizeof(int), s->nSubassemblies, f);
+  } else {
+    s->subassemblies = NULL;
+  }
+}
+
 void save() {
   printf("Saving\n");
 

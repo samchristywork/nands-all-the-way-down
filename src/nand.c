@@ -91,3 +91,52 @@ NandGate *createNand(Vec2 pos, int n) {
 
   return gate;
 }
+
+void setNumInputs(NandGate *g, int n) {
+  if (!g) {
+    return;
+  }
+
+  if (n <= g->nInputs) {
+    g->nInputs = n;
+  } else {
+    int oldN = g->nInputs;
+    g->nInputs = n;
+    g->inputs = realloc(g->inputs, sizeof(int) * n);
+    for (int i = oldN; i < n; i++) {
+      g->inputs[i] = -1;
+    }
+  }
+}
+
+bool checkGateCollision(NandGate *g, float x, float y) {
+  int gx = g->pos.x;
+  int gy = g->pos.y;
+
+  if (x > gx - 15 && x < gx + 55) {
+    if (y > gy - 25 && y < gy + 25) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void printNandGate(NandGate *ng) {
+  if (!ng) {
+    printf("NandGate is NULL\n");
+    return;
+  }
+
+  printf("NandGate Position: x=%f, y=%f\n", ng->pos.x, ng->pos.y);
+
+  printf("Number of Inputs: %d\n", ng->nInputs);
+  printf("Inputs: ");
+  for (int i = 0; i < ng->nInputs; i++) {
+    printf("%d ", ng->inputs[i]);
+  }
+  printf("\n");
+
+  printf("Current Value: %s\n", ng->value ? "true" : "false");
+  printf("Next Value: %s\n", ng->nextValue ? "true" : "false");
+}

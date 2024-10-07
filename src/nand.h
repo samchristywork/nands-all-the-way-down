@@ -9,4 +9,10 @@ int portFromPos(NandGate *g, float x, float y);
 
 NandGate *createNand(Vec2 pos, int n);
 
+void setNumInputs(NandGate *g, int n);
+
+bool checkGateCollision(NandGate *g, float x, float y);
+
+void printNandGate(NandGate *ng);
+
 #endif

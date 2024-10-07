@@ -5,4 +5,6 @@
 
 void tick();
 
+int portFromPos(NandGate *g, float x, float y);
+
 #endif

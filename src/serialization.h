@@ -3,4 +3,6 @@
 
 void save();
 
+void load();
+
 #endif

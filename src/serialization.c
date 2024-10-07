@@ -140,3 +140,38 @@ void save() {
 
   fclose(f);
 }
+
+void load() {
+  printf("Loading\n");
+
+  FILE *f = fopen("save", "r");
+  if (!f) {
+    return;
+  }
+
+  fread(&nSubassemblies, sizeof(nSubassemblies), 1, f);
+  subassemblies = malloc(sizeof(Subassembly *) * nSubassemblies);
+
+  for (int i = 0; i < nSubassemblies; i++) {
+    subassemblies[i] = malloc(sizeof(Subassembly));
+  }
+
+  for (int i = 0; i < nSubassemblies; i++) {
+    deserializeSubassembly(f, subassemblies[i]);
+  }
+
+  fread(&nGates, sizeof(nGates), 1, f);
+  gates = malloc(sizeof(NandGate *) * nGates);
+
+  for (int i = 0; i < nGates; i++) {
+    gates[i] = malloc(sizeof(NandGate));
+    gates[i]->shade = 255;
+    gates[i]->portHighlight = -1;
+  }
+
+  for (int i = 0; i < nGates; i++) {
+    deserializeNand(f, gates[i]);
+  }
+
+  fclose(f);
+}

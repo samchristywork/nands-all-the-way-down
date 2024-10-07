@@ -64,3 +64,30 @@ int portFromPos(NandGate *g, float x, float y) {
 
   return -1;
 }
+
+NandGate *createNand(Vec2 pos, int n) {
+  NandGate *gate = malloc(sizeof(NandGate));
+
+  gate->pos.x = pos.x;
+  gate->pos.y = pos.y;
+  gate->nInputs = n;
+  gate->inputs = malloc(sizeof(int) * 2);
+  for (int i = 0; i < n; i++) {
+    gate->inputs[i] = -1;
+  }
+  gate->value = false;
+  gate->shade = 255;
+  gate->portHighlight = -1;
+
+  if (gates == 0) {
+    gates = malloc(sizeof(NandGate *));
+  } else {
+    gates = realloc(gates, sizeof(NandGate *) * (nGates + 1));
+  }
+
+  gates[nGates] = gate;
+
+  nGates++;
+
+  return gate;
+}

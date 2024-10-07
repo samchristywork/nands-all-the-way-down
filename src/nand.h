@@ -7,4 +7,6 @@ void tick();
 
 int portFromPos(NandGate *g, float x, float y);
 
+NandGate *createNand(Vec2 pos, int n);
+
 #endif

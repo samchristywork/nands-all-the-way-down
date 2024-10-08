@@ -1,7 +1,10 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
 #include "nand.h"
+#include "render.h"
 
 extern NandGate **gates;
 extern int nGates;
@@ -38,13 +41,15 @@ void tick() {
   }
 }
 
-int portFromPos(NandGate *g, float x, float y) {
-  if (g->nInputs == 0) {
+int portFromPos(NandGate *g, Vec2 pos) {
+  if (g->nInputs == 0 || g == NULL) {
     return -1;
   } else if (g->nInputs == 1) {
-    float dx = g->pos.x - x;
-    float dy = g->pos.y - y;
-    if (dx * dx + dy * dy < 25 * 25) {
+    Vec2 d = {
+      g->pos.x - pos.x,
+      g->pos.y - pos.y
+    };
+    if (d.x * d.x + d.y * d.y < 25 * 25) {
       return 0;
     }
   } else {
@@ -53,9 +58,9 @@ int portFromPos(NandGate *g, float x, float y) {
 
       float w = 10;
       float h = 10;
-      if (x > g->pos.x - w && x < g->pos.x + w) {
-        if (y > g->pos.y - 15 + pitch * i - h &&
-            y < g->pos.y - 15 + pitch * i + h) {
+      if (pos.x > g->pos.x - w && pos.x < g->pos.x + w) {
+        if (pos.y > g->pos.y - 15 + pitch * i - h &&
+            pos.y < g->pos.y - 15 + pitch * i + h) {
           return i;
         }
       }
@@ -63,6 +68,61 @@ int portFromPos(NandGate *g, float x, float y) {
   }
 
   return -1;
+}
+
+void drawNandGate(SDL_Renderer *renderer, Vec2 pan, float zoom, NandGate *gate) {
+  int x = gate->pos.x - pan.x;
+  int y = gate->pos.y - pan.y;
+
+  float s = gate->shade;
+
+  line(renderer, pan, zoom, x, y - 20, x, y + 20, s, s, s, 255);
+  line(renderer, pan, zoom, x, y - 20, x + 20, y - 20, s, s, s, 255);
+  line(renderer, pan, zoom, x, y + 20, x + 20, y + 20, s, s, s, 255);
+  arc(renderer, pan, zoom, x + 20, y, 20, 270, 90, s, s, s, 255);
+  arc(renderer, pan, zoom, x + 45, y, 5, 0, 359, s, s, s, 255);
+
+  int r = 100;
+  int g = 100;
+  int b = 255;
+  if (gate->value) {
+    r = 255;
+    g = 255;
+    b = 0;
+  }
+  line(renderer, pan, zoom, x + 50, y, x + 55, y, r, g, b, 255);
+
+  for (int i = 0; i < gate->nInputs; i++) {
+    float h = 30;
+    float pitch = h / (gate->nInputs - 1);
+    float ix = gate->pos.x - 10 - pan.x;
+    float iy = gate->pos.y - 15 + i * pitch - pan.y;
+    int r = 100;
+    int g = 100;
+    int b = 255;
+
+    if (gate->nInputs == 1) {
+      iy = gate->pos.y - pan.y;
+    }
+
+    int gIdx = gate->inputs[i];
+    if (gIdx >= 0) {
+      NandGate *input = gates[gIdx];
+      if (input->value) {
+        r = 255;
+        g = 255;
+        b = 0;
+      }
+
+      line(renderer, pan, zoom, input->pos.x - pan.x + 55,
+                    input->pos.y - pan.y, ix, iy, r, g, b, 255);
+    }
+    line(renderer, pan, zoom, ix, iy, ix + 10, iy, r, g, b, 255);
+
+    if (gate->portHighlight == i) {
+      arc(renderer, pan, zoom, ix, iy, 5, 0, 359, s, s, s, 255);
+    }
+  }
 }
 
 NandGate *createNand(Vec2 pos, int n) {
@@ -109,12 +169,12 @@ void setNumInputs(NandGate *g, int n) {
   }
 }
 
-bool checkGateCollision(NandGate *g, float x, float y) {
+bool checkGateCollision(NandGate *g, Vec2 pos) {
   int gx = g->pos.x;
   int gy = g->pos.y;
 
-  if (x > gx - 15 && x < gx + 55) {
-    if (y > gy - 25 && y < gy + 25) {
+  if (pos.x > gx - 15 && pos.x < gx + 55) {
+    if (pos.y > gy - 25 && pos.y < gy + 25) {
       return true;
     }
   }

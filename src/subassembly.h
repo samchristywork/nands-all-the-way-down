@@ -11,4 +11,7 @@
 void drawSubassembly(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan,
                      float zoom, Subassembly *subassembly);
 
+Subassembly *createSubassembly(char *name, Rect rect, int nInputs, int nOutputs,
+                               char **inputNames, char **outputNames);
+
 #endif

@@ -42,3 +42,32 @@ void drawSubassembly(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan, float zoo
     thickLineRGBA(renderer, x*zoom, y*zoom, (child->rect.x-pan.x)*zoom, (child->rect.y-pan.y)*zoom, 1, 255, 255, 255, 255);
   }
 }
+
+Subassembly *createSubassembly(char *name, Rect rect, int nInputs, int nOutputs,
+                               char **inputNames, char **outputNames) {
+  Subassembly *s = malloc(sizeof(Subassembly));
+  s->name = name;
+  s->rect.x = rect.x;
+  s->rect.y = rect.y;
+  s->rect.w = rect.w;
+  s->rect.h = rect.h;
+  s->nInputs = nInputs;
+  s->nOutputs = nOutputs;
+  s->inputNames = inputNames;
+  s->outputNames = outputNames;
+  s->nGates = 0;
+  s->nSubassemblies = 0;
+
+  if (subassemblies == NULL) {
+    subassemblies = malloc(sizeof(Subassembly *));
+  } else {
+    subassemblies =
+        realloc(subassemblies, sizeof(Subassembly *) * (nSubassemblies + 1));
+  }
+
+  subassemblies[nSubassemblies] = s;
+
+  nSubassemblies++;
+
+  return s;
+}

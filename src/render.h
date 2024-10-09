@@ -20,4 +20,7 @@ void rect(SDL_Renderer *renderer, Vec2 pan, float zoom, float x, float y, float 
 void renderText(SDL_Renderer *renderer, TTF_Font *font, int x, int y,
                 const char *text);
 
+void render(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan, float zoom,
+            const char *statusline, const char *currentSubassemblyName);
+
 #endif

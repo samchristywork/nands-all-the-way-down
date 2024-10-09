@@ -2,6 +2,12 @@
 
 #include "subassembly.h"
 
+extern NandGate **gates;
+extern int nGates;
+extern int tickNumber;
+extern Subassembly **subassemblies;
+extern int nSubassemblies;
+
 void line(SDL_Renderer *renderer, Vec2 pan, float zoom, float x1, float y1,
     float x2, float y2, int r, int g, int b, int a) {
   x1 *= zoom;
@@ -88,4 +94,41 @@ void renderGrid(SDL_Renderer *renderer, Vec2 pan, float zoom) {
   for (int y = (int)(-pan.y) % span; y * zoom < dm.h; y += span) {
     line(renderer, pan, zoom, 0, y, dm.w / zoom, y, 50, 50, 50, 255);
   }
+}
+
+void render(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan, float zoom,
+            const char *statusline, const char *currentSubassemblyName) {
+
+  char tickString[100];
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+
+  renderGrid(renderer, pan, zoom);
+
+  sprintf(tickString, "Tick: %d", tickNumber);
+  renderText(renderer, font, 10, 10, tickString);
+
+  for (int i = 0; i < nSubassemblies; i++) {
+    drawSubassembly(renderer, font, pan, zoom, subassemblies[i]);
+  }
+
+  for (int i = 0; i < nGates; i++) {
+    drawNandGate(renderer, pan, zoom, gates[i]);
+  }
+
+  SDL_DisplayMode dm;
+  SDL_GetCurrentDisplayMode(0, &dm);
+  int y = dm.h - 60;
+  if (statusline) {
+    renderText(renderer, font, 10, y - 25, ":");
+    if (strlen(statusline) != 0) {
+      renderText(renderer, font, 20, y - 25, statusline);
+    }
+  }
+
+  if (currentSubassemblyName) {
+    renderText(renderer, font, 300, 10, currentSubassemblyName);
+  }
+
+  SDL_RenderPresent(renderer);
 }

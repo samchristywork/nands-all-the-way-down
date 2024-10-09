@@ -88,6 +88,36 @@ Subassembly *createSubassembly(char *name, Rect rect, int nInputs, int nOutputs,
   return s;
 }
 
+void subAssemblyAddGate(Subassembly *s, int g) {
+  if (s == NULL || g < 0) {
+    return;
+  }
+
+  if (s->nGates == 0) {
+    s->gates = malloc((s->nGates + 1) * sizeof(int));
+  } else {
+    s->gates = realloc(s->gates, (s->nGates + 1) * sizeof(int));
+  }
+
+  if (s->gates == NULL) {
+    perror("Failed to add gate due to memory allocation failure");
+    exit(EXIT_FAILURE);
+  }
+
+  s->gates[s->nGates] = g;
+
+  s->nGates++;
+}
+
+bool isInSubassembly(Subassembly *s, float x, float y) {
+  if (x > s->rect.x && x < s->rect.x + s->rect.w) {
+    if (y > s->rect.y && y < s->rect.y + s->rect.h) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void addInput(Subassembly *s, char *name) {
   if (s == NULL) {
     return;
@@ -120,4 +150,25 @@ void addOutput(Subassembly *s, char *name) {
 
   s->outputNames[s->nOutputs - 1] = malloc(strlen(name));
   strcpy(s->outputNames[s->nOutputs - 1], name);
+}
+
+void addSubassembly(Subassembly *s, int i) {
+  printf("Adding %s to %s\n", subassemblies[i]->name, s->name);
+  if (!s) {
+    return;
+  }
+
+  if (i<0) {
+    return;
+  }
+
+  if (s->nSubassemblies==0) {
+    s->subassemblies=malloc(sizeof(int));
+    s->subassemblies[0]=i;
+    s->nSubassemblies=1;
+  } else {
+    s->subassemblies=realloc(s->subassemblies, sizeof(int)*(s->nSubassemblies+1));
+    s->subassemblies[s->nSubassemblies]=i;
+    s->nSubassemblies++;
+  }
 }

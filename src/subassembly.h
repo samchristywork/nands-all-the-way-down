@@ -14,9 +14,15 @@ void drawSubassembly(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan,
 Subassembly *createSubassembly(char *name, Rect rect, int nInputs, int nOutputs,
                                char **inputNames, char **outputNames);
 
+void subAssemblyAddGate(Subassembly *s, int g);
+
+bool isInSubassembly(Subassembly *s, float x, float y);
+
 void addInput(Subassembly *s, char *name);
 
 void addOutput(Subassembly *s, char *name);
+
+void addSubassembly(Subassembly *s, int i);
 
 Vec2 getInputsScreenPos(Subassembly *s, int n, Vec2 pan, float zoom);
 

@@ -9,6 +9,22 @@ extern int nGates;
 extern Subassembly **subassemblies;
 extern int nSubassemblies;
 
+Vec2 getInputsScreenPos(Subassembly *s, int n, Vec2 pan, float zoom) {
+  float x = s->rect.x - pan.x;
+  float y = s->rect.y - pan.y;
+
+  float pitch = s->rect.h / s->nInputs;
+  return (Vec2){x, y + (float)n * pitch + pitch / 2};
+}
+
+Vec2 getOutputsScreenPos(Subassembly *s, int n, Vec2 pan, float zoom) {
+  float x = s->rect.x - pan.x + s->rect.w;
+  float y = s->rect.y - pan.y;
+
+  float pitch = s->rect.h / s->nOutputs;
+  return (Vec2){x, y + (float)n * pitch + pitch / 2};
+}
+
 void drawSubassembly(SDL_Renderer *renderer, TTF_Font *font, Vec2 pan, float zoom,
                      Subassembly *subassembly) {
   float x = subassembly->rect.x - pan.x;
@@ -70,4 +86,38 @@ Subassembly *createSubassembly(char *name, Rect rect, int nInputs, int nOutputs,
   nSubassemblies++;
 
   return s;
+}
+
+void addInput(Subassembly *s, char *name) {
+  if (s == NULL) {
+    return;
+  }
+
+  if (s->nInputs == 0) {
+    s->nInputs = 1;
+    s->inputNames = malloc(sizeof(char *));
+  } else {
+    s->nInputs++;
+    s->inputNames = realloc(s->inputNames, sizeof(char *) * s->nInputs);
+  }
+
+  s->inputNames[s->nInputs - 1] = malloc(strlen(name));
+  strcpy(s->inputNames[s->nInputs - 1], name);
+}
+
+void addOutput(Subassembly *s, char *name) {
+  if (s == NULL) {
+    return;
+  }
+
+  if (s->nOutputs == 0) {
+    s->nOutputs = 1;
+    s->outputNames = malloc(sizeof(char *));
+  } else {
+    s->nOutputs++;
+    s->outputNames = realloc(s->outputNames, sizeof(char *) * s->nOutputs);
+  }
+
+  s->outputNames[s->nOutputs - 1] = malloc(strlen(name));
+  strcpy(s->outputNames[s->nOutputs - 1], name);
 }

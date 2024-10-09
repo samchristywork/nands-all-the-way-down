@@ -28,4 +28,6 @@ Vec2 getInputsScreenPos(Subassembly *s, int n, Vec2 pan, float zoom);
 
 Vec2 getOutputsScreenPos(Subassembly *s, int n, Vec2 pan, float zoom);
 
+void printSubassembly(Subassembly *s);
+
 #endif

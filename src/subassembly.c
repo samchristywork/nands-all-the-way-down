@@ -172,3 +172,38 @@ void addSubassembly(Subassembly *s, int i) {
     s->nSubassemblies++;
   }
 }
+
+void printSubassembly(Subassembly *s) {
+  if (!s) {
+    printf("Subassembly is NULL\n");
+    return;
+  }
+
+  printf("Subassembly Name: %s\n", s->name);
+  printf("Rectangle: x=%f, y=%f, w=%f, h=%f\n", s->rect.x, s->rect.y, s->rect.w,
+         s->rect.h);
+
+  printf("Gates (%d): ", s->nGates);
+  for (int i = 0; i < s->nGates; i++) {
+    printf("%d ", s->gates[i]);
+  }
+  printf("\n");
+
+  printf("Number of Inputs: %d\n", s->nInputs);
+  printf("Input Names:\n");
+  for (int i = 0; i < s->nInputs; i++) {
+    printf("  - %s\n", s->inputNames[i]);
+  }
+
+  printf("Number of Outputs: %d\n", s->nOutputs);
+  printf("Output Names:\n");
+  for (int i = 0; i < s->nOutputs; i++) {
+    printf("  - %s\n", s->outputNames[i]);
+  }
+
+  printf("Subassemblies (%d): ", s->nSubassemblies);
+  for (int i = 0; i < s->nSubassemblies; i++) {
+    printf("%d ", s->subassemblies[i]);
+  }
+  printf("\n");
+}

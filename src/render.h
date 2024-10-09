@@ -17,4 +17,7 @@ void box(SDL_Renderer *renderer, Vec2 pan, float zoom, float x, float y, float w
 void rect(SDL_Renderer *renderer, Vec2 pan, float zoom, float x, float y, float w,
     float h, int r, int g, int b, int a);
 
+void renderText(SDL_Renderer *renderer, TTF_Font *font, int x, int y,
+                const char *text);
+
 #endif

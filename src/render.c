@@ -36,3 +36,26 @@ void rect(SDL_Renderer *renderer, Vec2 pan, float zoom, float x, float y, float 
   h *= zoom;
   rectangleRGBA(renderer, x, y, w, h, r, g, b, a);
 }
+
+void renderText(SDL_Renderer *renderer, TTF_Font *font, int x, int y,
+                const char *text) {
+  SDL_Color color = {255, 255, 255, 255};
+  SDL_Surface *textSurface = TTF_RenderText_Solid(font, text, color);
+  if (!textSurface) {
+    printf("TTF_RenderText_Solid Error: %s\n", TTF_GetError());
+    return;
+  }
+
+  SDL_Texture *textTexture =
+      SDL_CreateTextureFromSurface(renderer, textSurface);
+  if (!textTexture) {
+    printf("SDL_CreateTextureFromSurface Error: %s\n", SDL_GetError());
+    SDL_FreeSurface(textSurface);
+    return;
+  }
+
+  SDL_Rect renderQuad = {x, y, textSurface->w, textSurface->h};
+  SDL_FreeSurface(textSurface);
+  SDL_RenderCopy(renderer, textTexture, NULL, &renderQuad);
+  SDL_DestroyTexture(textTexture);
+}

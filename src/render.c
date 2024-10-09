@@ -59,3 +59,33 @@ void renderText(SDL_Renderer *renderer, TTF_Font *font, int x, int y,
   SDL_RenderCopy(renderer, textTexture, NULL, &renderQuad);
   SDL_DestroyTexture(textTexture);
 }
+
+void renderGrid(SDL_Renderer *renderer, Vec2 pan, float zoom) {
+  int baseSpan = 100;
+  int span = baseSpan;
+
+  if (zoom < 1.0f) {
+    int scale = (int)log2(1.0f / zoom);
+    span = baseSpan << scale;
+  } else {
+  }
+
+  SDL_DisplayMode dm;
+  SDL_GetCurrentDisplayMode(0, &dm);
+
+  for (int x = (int)(-pan.x + span / 2) % span; x * zoom < dm.w; x += span) {
+    line(renderer, pan, zoom, x, 0, x, dm.h / zoom, 25, 25, 25, 255);
+  }
+
+  for (int y = (int)(-pan.y + span / 2) % span; y * zoom < dm.h; y += span) {
+    line(renderer, pan, zoom, 0, y, dm.w / zoom, y, 25, 25, 25, 255);
+  }
+
+  for (int x = (int)(-pan.x) % span; x * zoom < dm.w; x += span) {
+    line(renderer, pan, zoom, x, 0, x, dm.h / zoom, 50, 50, 50, 255);
+  }
+
+  for (int y = (int)(-pan.y) % span; y * zoom < dm.h; y += span) {
+    line(renderer, pan, zoom, 0, y, dm.w / zoom, y, 50, 50, 50, 255);
+  }
+}

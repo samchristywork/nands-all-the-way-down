@@ -43,6 +43,12 @@ void rect(SDL_Renderer *renderer, Vec2 pan, float zoom, float x, float y, float 
   rectangleRGBA(renderer, x, y, w, h, r, g, b, a);
 }
 
+void logSDLError(const char *msg) {
+  fprintf(stderr, "%s error: %s\n", msg, SDL_GetError());
+  SDL_Quit();
+  exit(EXIT_FAILURE);
+}
+
 void renderText(SDL_Renderer *renderer, TTF_Font *font, int x, int y,
                 const char *text) {
   SDL_Color color = {255, 255, 255, 255};

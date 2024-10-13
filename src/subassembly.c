@@ -207,3 +207,71 @@ void printSubassembly(Subassembly *s) {
   }
   printf("\n");
 }
+
+int copySubassembly(Subassembly *cs) {
+  char *name = malloc(strlen(cs->name));
+  strcpy(name, cs->name);
+  Rect rect;
+  memcpy(&rect, &cs->rect, sizeof(Rect));
+  rect.x += 100;
+  rect.y += 100;
+  Subassembly *s = createSubassembly(name, rect, 0, 0, NULL, NULL);
+  int ret = nSubassemblies-1;
+
+  s->nInputs = cs->nInputs;
+  s->nOutputs = cs->nOutputs;
+  s->inputNames = malloc(sizeof(int) * s->nInputs);
+  s->outputNames = malloc(sizeof(int) * s->nOutputs);
+
+  for (int i = 0; i < s->nInputs; i++) {
+    s->inputNames[i] =
+        malloc(strlen(cs->inputNames[i]));
+    strcpy(s->inputNames[i], cs->inputNames[i]);
+  }
+
+  for (int i = 0; i < s->nOutputs; i++) {
+    s->outputNames[i] =
+        malloc(strlen(cs->outputNames[i]));
+    strcpy(s->outputNames[i], cs->outputNames[i]);
+  }
+
+  NandGate **newGates =
+      malloc(sizeof(NandGate *) * cs->nGates);
+  Pair *map = malloc(sizeof(Pair) * cs->nGates);
+
+  for (int i = 0; i < cs->nGates; i++) {
+    NandGate *g = createNand(
+        (Vec2){gates[cs->gates[i]]->pos.x + 100,
+               gates[cs->gates[i]]->pos.y + 100},
+        gates[cs->gates[i]]->nInputs);
+    subAssemblyAddGate(s, nGates - 1);
+
+    newGates[i] = g;
+    map[i].from = cs->gates[i];
+    map[i].to = nGates - 1;
+
+    int nInputs = gates[cs->gates[i]]->nInputs;
+    for (int j = 0; j < nInputs; j++) {
+      g->inputs[j] = gates[cs->gates[i]]->inputs[j];
+    }
+  }
+
+  for (int i = 0; i < cs->nGates; i++) {
+    NandGate *g = newGates[i];
+    for (int j = 0; j < g->nInputs; j++) {
+      for (int k = 0; k < cs->nGates; k++) {
+        if (map[k].from == g->inputs[j]) {
+          g->inputs[j] = map[k].to;
+        }
+      }
+    }
+  }
+
+  s->nSubassemblies=cs->nSubassemblies;
+  s->subassemblies=malloc(sizeof(int)*s->nSubassemblies);
+  for (int i = 0; i < cs->nSubassemblies; i++) {
+    s->subassemblies[i]=copySubassembly(subassemblies[cs->subassemblies[i]]);
+  }
+
+  return ret;
+}

@@ -275,3 +275,19 @@ int copySubassembly(Subassembly *cs) {
 
   return ret;
 }
+
+void moveSubassemblyRelative(Subassembly *s, float dx, float dy, bool shiftDown) {
+  s->rect.x += dx;
+  s->rect.y += dy;
+
+  if (!shiftDown) {
+    for (int i = 0; i < s->nGates; i++) {
+      gates[s->gates[i]]->pos.x += dx;
+      gates[s->gates[i]]->pos.y += dy;
+    }
+
+    for (int i = 0; i < s->nSubassemblies; i++) {
+      moveSubassemblyRelative(subassemblies[s->subassemblies[i]], dx, dy, shiftDown);
+    }
+  }
+}

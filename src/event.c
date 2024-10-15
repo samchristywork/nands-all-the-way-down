@@ -180,3 +180,16 @@ bool handleRightMouseEvents(SDL_Event e, Vec2 mouse) {
 
   return shouldRender;
 }
+
+bool handleWheelMouseEvents(SDL_Event e) {
+  if (e.type == SDL_MOUSEWHEEL) {
+    if (e.wheel.y>0) {
+      zoom*=1.1;
+    } else if (e.wheel.y<0) {
+      zoom*=0.9;
+    }
+    return true;
+  }
+
+  return false;
+}

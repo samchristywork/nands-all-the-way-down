@@ -141,4 +141,42 @@ bool handleRightMouseEvents(SDL_Event e, Vec2 mouse) {
       }
     }
   }
+
+  if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_RIGHT) {
+    subassemblyResize = NULL;
+
+    for (int i = 0; i < nGates; i++) {
+      float x = mouse.x;
+      float y = mouse.y;
+      NandGate *g = gates[i];
+      int port = portFromPos(g, (Vec2){x, y});
+
+      if (port != -1) {
+        selection[1].selected = true;
+        selection[1].g = g;
+        selection[1].n = port;
+        selection[1].id = i;
+
+        break;
+      }
+    }
+
+    if (selection[0].selected && selection[1].selected) {
+      Port a = selection[0];
+      Port b = selection[1];
+
+      if (b.g->inputs[b.n] != a.id) {
+        b.g->inputs[b.n] = a.id;
+      } else {
+        b.g->inputs[b.n] = -1;
+      }
+    }
+
+    selection[0].selected = false;
+    selection[1].selected = false;
+
+    shouldRender = true;
+  }
+
+  return shouldRender;
 }

@@ -109,3 +109,36 @@ bool handleLeftMouseEvents(SDL_Event e, Vec2 mouse) {
 
   return shouldRender;
 }
+
+bool handleRightMouseEvents(SDL_Event e, Vec2 mouse) {
+  bool shouldRender = false;
+
+  if (e.type == SDL_MOUSEBUTTONDOWN &&
+      e.button.button == SDL_BUTTON_RIGHT) {
+    for (int i = 0; i < nGates; i++) {
+      float x = mouse.x;
+      float y = mouse.y;
+      NandGate *g = gates[i];
+      if (checkGateCollision(g, (Vec2){x, y})) {
+        selection[0].selected = true;
+        selection[0].g = g;
+        selection[0].id = i;
+      }
+    }
+
+    if (!selection[0].selected) {
+      for (int i = 0; i < nSubassemblies; i++) {
+        float x = mouse.x;
+        float y = mouse.y;
+        Subassembly *s = subassemblies[i];
+        clickPos.x = s->rect.x - x;
+        clickPos.y = s->rect.y - y;
+        if (isInSubassembly(s, x, y)) {
+          subassemblyResize = s;
+          shouldRender = true;
+          break;
+        }
+      }
+    }
+  }
+}
